@@ -8,6 +8,7 @@ import (
 	"net/http/fcgi"
 	"startones"
 	"sync"
+	"bthandler"
 )
 
 var startOnce sync.Once
@@ -27,13 +28,16 @@ func (s FastCGIServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	//	themes := req.Header.Get("X-THEMES")
 	//	locale := req.Header.Get("X-LOCALE")
 	//	variant := req.Header.Get("X-VARIANT")
-	//	site := req.Header.Get("X-DOMAIN")
-	//	pathinfo := req.Header.Get("X-PATHINFO")
+		site := req.Header.Get("X-DOMAIN")
+		pathinfo := req.Header.Get("X-PATHINFO")
 	//	bot := req.Header.Get("X-BOT")
 
 	startOnce.Do(func() {
 		startparameters = startones.Start(*golog)
 	})
+	
+	
+	bthandler.BTrequestHandler(*golog, resp, req, "fi_FI", "porno", site,pathinfo , "google", startparameters,false,"variant")
 
 }
 
