@@ -1,28 +1,16 @@
 package bthandler
 
 import (
-	//	"clean_pathinfo"
-	//	"createfirstgz"
-	//	"createpage"
-	//	"domains"
-	//	"encoding/json"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	//	"keywords_and_phrases"
 	"log/syslog"
-	"net/http"
-	//	"somekeywords"
-	//	"somephrases"
 	"menu"
+	"net/http"
+	"paragraph"
 	"strings"
-
-	//	"redis_hdl"
-	//	"sitemaphandler"
-	//	"robots_txt"
 )
 
-func BTrequestHandler(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, locale string, themes string, site string, pathinfo string, bot string, startparameters []string, blocksite bool, variant string) {
-
+func BTrequestHandler(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, locale string, themes string, site string, pathinfo string, bot string, startparameters []string, blocksite bool, variant string,menupath string,quant string) {
 
 	c_local, err := redis.Dial("tcp", ":6379")
 	if err != nil {
@@ -30,20 +18,25 @@ func BTrequestHandler(golog syslog.Writer, resp http.ResponseWriter, req *http.R
 		golog.Crit(err.Error())
 
 	}
+	var jsonBytes []byte
+	var bres []byte
 
-	if strings.HasSuffix(pathinfo, "menu") {
+	if strings.HasPrefix(pathinfo, "/menu") {
 
-		bkeyword_phrasearr := menu.GetMenu(golog, c_local, startparameters, locale, themes, site)
+		bres = menu.GetMenu(golog, c_local, startparameters, locale, themes, site,quant)
 
-		golog.Info("bkeyword_phrasearr "+string(bkeyword_phrasearr))
+	} else if strings.HasPrefix(pathinfo, "/paragraph") {
 
-		resp.Header().Add("Content-type", "application/javascript")
-
-		resp.Header().Add("Access-Control-Allow-Origin", "*")
-		jsonBytes := []byte(fmt.Sprintf("%s", bkeyword_phrasearr))
-
-		resp.Write(jsonBytes)
+		bres = paragraph.GetParagrph(golog, c_local, startparameters, locale, themes, site,pathinfo, menupath)
 
 	}
+	//	golog.Info("bres " + string(bres))
+
+	resp.Header().Add("Content-type", "application/javascript")
+
+	resp.Header().Add("Access-Control-Allow-Origin", "*")
+	jsonBytes = []byte(fmt.Sprintf("%s", bres))
+
+	resp.Write(jsonBytes)
 
 }

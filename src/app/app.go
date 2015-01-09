@@ -25,11 +25,13 @@ func (s FastCGIServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		log.Fatal("error writing syslog!!")
 	}
 
-	//	themes := req.Header.Get("X-THEMES")
-	//	locale := req.Header.Get("X-LOCALE")
-	//	variant := req.Header.Get("X-VARIANT")
+		themes := req.Header.Get("X-THEMES")
+		locale := req.Header.Get("X-LOCALE")
+		variant := req.Header.Get("X-VARIANT")
 		site := req.Header.Get("X-DOMAIN")
 		pathinfo := req.Header.Get("X-PATHINFO")
+		menupath := req.Header.Get("X-MENUPATH")
+		quant :=req.Header.Get("X-QUANT")
 	//	bot := req.Header.Get("X-BOT")
 
 	startOnce.Do(func() {
@@ -37,7 +39,11 @@ func (s FastCGIServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	})
 	
 	
-	bthandler.BTrequestHandler(*golog, resp, req, "fi_FI", "porno", site,pathinfo , "google", startparameters,false,"variant")
+	golog.Info("menupath "+menupath)
+	golog.Info("quant "+quant)
+	
+	
+	bthandler.BTrequestHandler(*golog, resp, req, locale, themes, site,pathinfo , "google", startparameters,false,variant,menupath,quant)
 
 }
 

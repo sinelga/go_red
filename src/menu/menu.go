@@ -9,11 +9,14 @@ import (
 	//	"strings"
 	"domains"
 	"encoding/json"
+	"strconv"
 )
 
-func GetMenu(golog syslog.Writer, c redis.Conn, startparameters []string, locale string, themes string, site string) []byte {
+func GetMenu(golog syslog.Writer, c redis.Conn, startparameters []string, locale string, themes string, site string, quant string) []byte {
 
 	var bkeyword_phrasearr []byte
+
+	quantint, _ := strconv.Atoi(quant)
 
 	queuename := locale + ":" + themes + ":menu:" + site
 
@@ -35,11 +38,8 @@ func GetMenu(golog syslog.Writer, c redis.Conn, startparameters []string, locale
 			}
 
 		} else if exist == 0 {
-			
 
 			keywords, phrases := keywords_and_phrases.GetAll(golog, locale, themes, startparameters)
-
-			quantint := 50
 
 			somekeywordsres := somekeywords.GetSome(golog, keywords, quantint)
 			somephrasesres := somephrases.GetSome(golog, phrases, quantint)
@@ -72,16 +72,17 @@ func GetMenu(golog syslog.Writer, c redis.Conn, startparameters []string, locale
 
 			} else {
 
-				if _, err := redis.String(c.Do("SET", queuename, string(bkeyword_phrasearr),"EX",60)); err != nil {
+				if _, err := redis.String(c.Do("SET", queuename, string(bkeyword_phrasearr), "EX", 120)); err != nil {
+
+					golog.Err(err.Error())
 
 				}
 
-			}			
-			
+			}
+
 		}
 
 	}
-
 
 	return bkeyword_phrasearr
 
