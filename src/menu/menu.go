@@ -72,7 +72,7 @@ func GetMenu(golog syslog.Writer, c redis.Conn, startparameters []string, locale
 
 			} else {
 
-				if _, err := redis.String(c.Do("SET", queuename, string(bkeyword_phrasearr), "EX", 120)); err != nil {
+				if _, err := redis.String(c.Do("SET", queuename, string(bkeyword_phrasearr), "EX", 172800)); err != nil {
 
 					golog.Err(err.Error())
 

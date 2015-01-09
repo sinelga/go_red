@@ -44,7 +44,7 @@ func GetParagrph(golog syslog.Writer, c redis.Conn, startparameters []string, lo
 				bparagraph = []byte(paragraph)
 				
 				
-				if _, err := redis.String(c.Do("SET", queuename, string(bparagraph),"EX",120)); err != nil {
+				if _, err := redis.String(c.Do("SET", queuename, string(bparagraph),"EX",864000)); err != nil {
 					
 					golog.Err(err.Error())
 
