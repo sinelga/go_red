@@ -1,7 +1,7 @@
 package domains
 
 import (
-//	"encoding/xml"
+	"encoding/xml"
 //	"time"
 	)
 
@@ -55,14 +55,14 @@ type Paragraph struct {
 //	
 //}
 
-//type Pages struct {
-////	Version string   `xml:"version,attr"`			
-//	XMLName    xml.Name `xml:"urlset"`
-//	XmlNS      string   `xml:"xmlns,attr"`
-////	XmlImageNS string   `xml:"xmlns:image,attr"`
-////	XmlNewsNS  string   `xml:"xmlns:news,attr"`
-//	Pages      []*Page  `xml:"url"`
-//}
+type Pages struct {
+//	Version string   `xml:"version,attr"`			
+	XMLName    xml.Name `xml:"urlset"`
+	XmlNS      string   `xml:"xmlns,attr"`
+//	XmlImageNS string   `xml:"xmlns:image,attr"`
+//	XmlNewsNS  string   `xml:"xmlns:news,attr"`
+	Pages      []*Page  `xml:"url"`
+}
 
 //type Page struct {
 //	XMLName    xml.Name `xml:"url"`
@@ -75,4 +75,13 @@ type Paragraph struct {
 ////	Image      string   `xml:"image:image>image:loc"`
 //}
 
-
+type Page struct {
+	XMLName    xml.Name `xml:"url"`
+	Loc        string   `xml:"loc"`
+	Lastmod    string `xml:"lastmod"`
+//	Name       string   `xml:"news:news>news:publication>news:name"`
+//	Language   string   `xml:"news:news>news:publication>news:language"`
+//	Title      string   `xml:"news:news>news:title"`
+//	Keywords   string   `xml:"news:news>news:keywords"`
+//	Image      string   `xml:"image:image>image:loc"`
+}

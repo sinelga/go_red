@@ -7,6 +7,7 @@ import (
 	"menu"
 	"net/http"
 	"paragraph"
+	"sitemaphandler"
 	"strings"
 )
 
@@ -29,12 +30,23 @@ func BTrequestHandler(golog syslog.Writer, resp http.ResponseWriter, req *http.R
 
 		bres = paragraph.GetParagrph(golog, c_local, startparameters, locale, themes, site,pathinfo, menupath)
 
+	} else if strings.HasPrefix(pathinfo, "/sitemap.xml") {
+
+		bres = sitemaphandler.Create(golog,c_local,locale,themes,site,startparameters,"15")
+
 	}
+	
+	
 	//	golog.Info("bres " + string(bres))
-
+	if strings.HasPrefix(pathinfo, "/sitemap.xml") {
+		resp.Header().Add("Content-type", "application/xml")
+		
+	} else {
+	
 	resp.Header().Add("Content-type", "application/javascript")
-
 	resp.Header().Add("Access-Control-Allow-Origin", "*")
+	
+	}
 	jsonBytes = []byte(fmt.Sprintf("%s", bres))
 
 	resp.Write(jsonBytes)
