@@ -108,7 +108,7 @@ func Create(golog syslog.Writer, c redis.Conn, locale string, themes string, sit
 
 		doc := new(domains.Page)
 
-		doc.Loc = "http://" + site + "/!#/q/" + path
+		doc.Loc = "http://" + site + "/#!/q/" + path
 		doc.Lastmod = pubdate
 		//	doc.Name = "The Example Times"
 		//	doc.Language = "en"
