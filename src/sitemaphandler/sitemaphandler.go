@@ -3,23 +3,20 @@ package sitemaphandler
 import (
 	"domains"
 	"encoding/json"
-	"encoding/xml"
+	//	"encoding/xml"
 	"github.com/garyburd/redigo/redis"
 	"log/syslog"
-	"time"
-	"bytes"
+	//	"time"
+	//	"bytes"
 	"keywords_and_phrases"
 	"strconv"
-	"sitemappathes"
+	//	"sitemappathes"
 	"somekeywords"
 	"somephrases"
 )
 
-func Create(golog syslog.Writer, c redis.Conn, locale string, themes string, site string, startparameters []string, quant string) []byte {
+func Create(golog syslog.Writer, c redis.Conn, locale string, themes string, site string, startparameters []string, quant string, keyword_phrase_from_menu []domains.Keyword_phrase) []domains.Keyword_phrase {
 
-	var buffer bytes.Buffer
-
-	var bkeyword_phrasearr []byte
 
 	quantint, _ := strconv.Atoi(quant)
 
@@ -50,6 +47,18 @@ func Create(golog syslog.Writer, c redis.Conn, locale string, themes string, sit
 
 			}
 
+			if keyword_phrase_from_menu != nil {
+
+				for _, keyword_phrase := range keyword_phrase_from_menu {
+
+					keyword_phrasearr = append(keyword_phrasearr, keyword_phrase)
+
+				}
+
+				putIntoRedis(golog, c, keyword_phrasearr, queuename)
+
+			}
+
 		} else if exist == 0 {
 
 			keywords, phrases := keywords_and_phrases.GetAll(golog, locale, themes, startparameters)
@@ -77,57 +86,42 @@ func Create(golog syslog.Writer, c redis.Conn, locale string, themes string, sit
 
 			}
 
-			if bkeyword_phrasearr, err = json.Marshal(keyword_phrasearr); err != nil {
+			if keyword_phrase_from_menu != nil {
 
-				golog.Err(err.Error())
+				for _, keyword_phrase := range keyword_phrase_from_menu {
 
-			} else {
-
-				if _, err := redis.String(c.Do("SET", queuename, string(bkeyword_phrasearr), "EX", 864000)); err != nil {
-
-					golog.Err(err.Error())
+					keyword_phrasearr = append(keyword_phrasearr, keyword_phrase)
 
 				}
 
+				putIntoRedis(golog, c, keyword_phrasearr, queuename)
+
 			}
+
+			putIntoRedis(golog, c, keyword_phrasearr, queuename)
 
 		}
 
 	}
 
-	pathsarr := sitemappathes.CreatePathes(golog, keyword_phrasearr)
+	return keyword_phrasearr
 
-	docList := new(domains.Pages)
-	docList.XmlNS = "http://www.sitemaps.org/schemas/sitemap/0.9"
-	
-	d := time.Now()
+}
 
-	for i, path := range pathsarr {
+func putIntoRedis(golog syslog.Writer, c redis.Conn, keyword_phrasearr []domains.Keyword_phrase, queuename string) {
 
-		pubdate := time.Date(d.Year(), d.Month(), d.Day()-(i+1), 0, 0, 0, 0, time.UTC).Local().Format(time.RFC3339)
+	if bkeyword_phrasearr, err := json.Marshal(keyword_phrasearr); err != nil {
 
-		doc := new(domains.Page)
+		golog.Err(err.Error())
 
-		doc.Loc = "http://" + site + "/#!/q/" + path
-		doc.Lastmod = pubdate
-		//	doc.Name = "The Example Times"
-		//	doc.Language = "en"
-		//	doc.Title = "Companies A, B in Merger Talks"
-		//	doc.Keywords = "business, merger, acquisition, A, B"
-		//	doc.Image = "http://www.google.com/spacer.gif"
-		docList.Pages = append(docList.Pages, doc)
+	} else {
+
+		if _, err := redis.String(c.Do("SET", queuename, string(bkeyword_phrasearr), "EX", 864000)); err != nil {
+
+			golog.Err(err.Error())
+
+		}
 
 	}
-
-	resultXml, err := xml.MarshalIndent(docList, "", "  ")
-	if err != nil {
-
-		golog.Crit(err.Error())
-	}
-
-	buffer.WriteString(xml.Header)
-	buffer.Write(resultXml)
-
-	return buffer.Bytes()
 
 }

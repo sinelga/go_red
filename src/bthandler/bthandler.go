@@ -9,6 +9,7 @@ import (
 	"paragraph"
 	"sitemaphandler"
 	"strings"
+	"sitemapcreator"
 )
 
 func BTrequestHandler(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, locale string, themes string, site string, pathinfo string, bot string, startparameters []string, blocksite bool, variant string,menupath string,quant string) {
@@ -32,12 +33,11 @@ func BTrequestHandler(golog syslog.Writer, resp http.ResponseWriter, req *http.R
 
 	} else if strings.HasPrefix(pathinfo, "/sitemap.xml") {
 
-		bres = sitemaphandler.Create(golog,c_local,locale,themes,site,startparameters,"15")
+		keyword_phrasearr := sitemaphandler.Create(golog,c_local,locale,themes,site,startparameters,"15",nil)
+		bres = sitemapcreator.Createsitemap(golog,keyword_phrasearr,site)
 
 	}
-	
-	
-	//	golog.Info("bres " + string(bres))
+
 	if strings.HasPrefix(pathinfo, "/sitemap.xml") {
 		resp.Header().Add("Content-type", "application/xml")
 		

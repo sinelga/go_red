@@ -6,9 +6,9 @@ import (
 	"log/syslog"
 	"somekeywords"
 	"somephrases"
-	//	"strings"
 	"domains"
 	"encoding/json"
+	"sitemaphandler"
 	"strconv"
 )
 
@@ -18,9 +18,9 @@ func GetMenu(golog syslog.Writer, c redis.Conn, startparameters []string, locale
 
 	quantint, _ := strconv.Atoi(quant)
 
-	queuename := locale + ":" + themes + ":menu:" + site
+	menu_queuename := locale + ":" + themes + ":menu:" + site
 
-	if exist, err := redis.Int(c.Do("EXISTS", queuename)); err != nil {
+	if exist, err := redis.Int(c.Do("EXISTS", menu_queuename)); err != nil {
 
 		golog.Err("menu:exist " + err.Error())
 
@@ -28,7 +28,7 @@ func GetMenu(golog syslog.Writer, c redis.Conn, startparameters []string, locale
 
 		if exist == 1 {
 
-			if menu, err := redis.String(c.Do("GET", queuename)); err != nil {
+			if menu, err := redis.String(c.Do("GET", menu_queuename)); err != nil {
 
 				golog.Err("menu " + err.Error())
 			} else {
@@ -72,13 +72,15 @@ func GetMenu(golog syslog.Writer, c redis.Conn, startparameters []string, locale
 
 			} else {
 
-				if _, err := redis.String(c.Do("SET", queuename, string(bkeyword_phrasearr), "EX", 172800)); err != nil {
+				if _, err := redis.String(c.Do("SET", menu_queuename, string(bkeyword_phrasearr), "EX", 172800)); err != nil {
 
 					golog.Err(err.Error())
 
 				}
 
 			}
+
+			sitemaphandler.Create(golog, c, locale, themes, site, startparameters, quant, keyword_phrasearr)
 
 		}
 
