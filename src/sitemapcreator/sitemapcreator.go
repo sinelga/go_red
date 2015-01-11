@@ -27,7 +27,7 @@ func Createsitemap(golog syslog.Writer, keyword_phrasearr []domains.Keyword_phra
 		doc := new(domains.Page)
 
 //		doc.Loc = "http://" + site + "/#!/q/" + path
-		doc.Loc = "http://" + site + "/" + path
+		doc.Loc = "http://" + site + "/q/" + path
 		doc.Lastmod = pubdate
 		//	doc.Name = "The Example Times"
 		//	doc.Language = "en"
