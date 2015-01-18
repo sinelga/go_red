@@ -13,6 +13,17 @@ import (
 //	Paragraphs []Paragraph
 //}
 
+type Fortuneteller struct {
+	Id int
+	Name string
+	Phone string
+	Location string
+	Moto string
+	Desc string
+	
+	
+}
+
 type Keyword struct {
 	
 	Keyword string

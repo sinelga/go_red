@@ -23,33 +23,7 @@ import (
 	parameters := strings.Split(string(content), ",")
 	cleanparameters := []string{strings.TrimSpace(parameters[0]), strings.TrimSpace(parameters[1]), strings.TrimSpace(parameters[2])}
 
-//	c, err := redis.Dial("tcp", ":6379")
-//	defer c.Close()
-//	if err != nil {
-//
-//		golog.Err("startones: " + err.Error())
-//		os.Exit(1)
-//	} else {
-//
-//		if limitsites, err := redis.Strings(c.Do("ZRANGEBYSCORE", "limitsites", "("+cleanparameters[2], "+inf")); err != nil {
-//
-//			golog.Crit("FindFromQ: " + err.Error())
-//
-//		} else {
-//
-//			
-//			for _,sitetoblock :=range limitsites {
-//				
-//				sitestoblock[sitetoblock] = struct{}{} 
-//				
-//			}
-//			
-//
-//
-//		}
-//
-//	}
-//	c.Close()
+
 
 	return cleanparameters
 

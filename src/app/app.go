@@ -39,9 +39,9 @@ func (s FastCGIServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	})
 	
 	
-	golog.Info("menupath "+menupath)
-	golog.Info("quant "+quant)
-	
+//	golog.Info("menupath "+menupath)
+//	golog.Info("quant "+quant)
+//	
 	
 	bthandler.BTrequestHandler(*golog, resp, req, locale, themes, site,pathinfo , "google", startparameters,false,variant,menupath,quant)
 

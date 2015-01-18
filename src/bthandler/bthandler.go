@@ -10,6 +10,7 @@ import (
 	"robotstxt"
 	"sitemapcreator"
 	"sitemaphandler"
+	"fortunetellers"
 	"strings"
 )
 
@@ -41,6 +42,9 @@ func BTrequestHandler(golog syslog.Writer, resp http.ResponseWriter, req *http.R
 
 		bres = robotstxt.Createrobotstxt(golog, site)
 
+	}  else if strings.HasPrefix(pathinfo, "/fortunetellers") {
+		
+		bres = fortunetellers.GetAll(golog)
 	}
 
 	if strings.HasPrefix(pathinfo, "/sitemap.xml") {
