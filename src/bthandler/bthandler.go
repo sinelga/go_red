@@ -36,7 +36,7 @@ func BTrequestHandler(golog syslog.Writer, resp http.ResponseWriter, req *http.R
 	} else if strings.HasPrefix(pathinfo, "/sitemap.xml") {
 
 		keyword_phrasearr := sitemaphandler.Create(golog, c_local, locale, themes, site, startparameters, "15", nil)
-		bres = sitemapcreator.Createsitemap(golog, keyword_phrasearr, site)
+		bres = sitemapcreator.Createsitemap(golog,locale, themes, keyword_phrasearr, site)
 
 	} else if strings.HasPrefix(pathinfo, "/robots.txt") {
 

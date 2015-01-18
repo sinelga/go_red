@@ -2,6 +2,7 @@ package sitemaphandler
 
 import (
 	"domains"
+	"encoding/csv"
 	"encoding/json"
 	//	"encoding/xml"
 	"github.com/garyburd/redigo/redis"
@@ -11,12 +12,12 @@ import (
 	"keywords_and_phrases"
 	"strconv"
 	//	"sitemappathes"
+	"os"
 	"somekeywords"
 	"somephrases"
 )
 
 func Create(golog syslog.Writer, c redis.Conn, locale string, themes string, site string, startparameters []string, quant string, keyword_phrase_from_menu []domains.Keyword_phrase) []domains.Keyword_phrase {
-
 
 	quantint, _ := strconv.Atoi(quant)
 
@@ -61,44 +62,77 @@ func Create(golog syslog.Writer, c redis.Conn, locale string, themes string, sit
 
 		} else if exist == 0 {
 
-			keywords, phrases := keywords_and_phrases.GetAll(golog, locale, themes, startparameters)
+			if locale == "fi_FI" && themes == "fortune" {
 
-			somekeywordsres := somekeywords.GetSome(golog, keywords, quantint)
-			somephrasesres := somephrases.GetSome(golog, phrases, quantint)
+				csvFile, err := os.Open("/home/juno/git/go_red/fortunesitemap.csv")
 
-			if len(somekeywordsres) <= len(somephrasesres) {
+				if err != nil {
+					golog.Crit(err.Error())
+				}
 
-				for i, keyword := range somekeywordsres {
+				defer csvFile.Close()
 
-					keyword_phrase := domains.Keyword_phrase{keyword, somephrasesres[i]}
-					keyword_phrasearr = append(keyword_phrasearr, keyword_phrase)
+				reader := csv.NewReader(csvFile)
+
+				reader.FieldsPerRecord = -1
+
+				csvData, err := reader.ReadAll()
+				if err != nil {
+					golog.Crit(err.Error())
+				}
+
+				var fortune_keyword_phrase domains.Keyword_phrase
+
+				for _, each := range csvData {
+
+					fortune_keyword_phrase.Keyword = each[0]
+					fortune_keyword_phrase.Phrase = each[1]
+					keyword_phrasearr = append(keyword_phrasearr, fortune_keyword_phrase)
 
 				}
 
 			} else {
 
-				for i, phrase := range somephrasesres {
+				keywords, phrases := keywords_and_phrases.GetAll(golog, locale, themes, startparameters)
 
-					keyword_phrase := domains.Keyword_phrase{somekeywordsres[i], phrase}
-					keyword_phrasearr = append(keyword_phrasearr, keyword_phrase)
+				somekeywordsres := somekeywords.GetSome(golog, keywords, quantint)
+				somephrasesres := somephrases.GetSome(golog, phrases, quantint)
+
+				if len(somekeywordsres) <= len(somephrasesres) {
+
+					for i, keyword := range somekeywordsres {
+
+						keyword_phrase := domains.Keyword_phrase{keyword, somephrasesres[i]}
+						keyword_phrasearr = append(keyword_phrasearr, keyword_phrase)
+
+					}
+
+				} else {
+
+					for i, phrase := range somephrasesres {
+
+						keyword_phrase := domains.Keyword_phrase{somekeywordsres[i], phrase}
+						keyword_phrasearr = append(keyword_phrasearr, keyword_phrase)
+
+					}
 
 				}
 
-			}
+				if keyword_phrase_from_menu != nil {
 
-			if keyword_phrase_from_menu != nil {
+					for _, keyword_phrase := range keyword_phrase_from_menu {
 
-				for _, keyword_phrase := range keyword_phrase_from_menu {
+						keyword_phrasearr = append(keyword_phrasearr, keyword_phrase)
 
-					keyword_phrasearr = append(keyword_phrasearr, keyword_phrase)
+					}
+
+					putIntoRedis(golog, c, keyword_phrasearr, queuename)
 
 				}
 
 				putIntoRedis(golog, c, keyword_phrasearr, queuename)
 
 			}
-
-			putIntoRedis(golog, c, keyword_phrasearr, queuename)
 
 		}
 
