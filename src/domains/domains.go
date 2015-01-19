@@ -5,13 +5,23 @@ import (
 //	"time"
 	)
 
-//type Site struct {
-//	Pathinfo   string
-//	Created    int64
-//	Updated    int64
-//	Hits       int
-//	Paragraphs []Paragraph
-//}
+type Fortune_feed_links struct {
+	
+	Locale string
+	Themes string
+	Path string
+	Qdomain string
+	Qpath string
+	
+	
+}
+
+
+type FortuneZodiac struct {
+	Redlink string
+	Zodiacinfo []byte		
+}
+
 
 type Fortuneteller struct {
 	Id int

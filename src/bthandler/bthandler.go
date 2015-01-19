@@ -11,10 +11,11 @@ import (
 	"sitemapcreator"
 	"sitemaphandler"
 	"fortunetellers"
+	"zodiacinfo"
 	"strings"
 )
 
-func BTrequestHandler(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, locale string, themes string, site string, pathinfo string, bot string, startparameters []string, blocksite bool, variant string, menupath string, quant string) {
+func BTrequestHandler(golog syslog.Writer, resp http.ResponseWriter, req *http.Request, locale string, themes string, site string, pathinfo string, bot string, startparameters []string, blocksite bool, variant string, menupath string, quant string,extpath string) {
 
 	c_local, err := redis.Dial("tcp", ":6379")
 	if err != nil {
@@ -45,6 +46,9 @@ func BTrequestHandler(golog syslog.Writer, resp http.ResponseWriter, req *http.R
 	}  else if strings.HasPrefix(pathinfo, "/fortunetellers") {
 		
 		bres = fortunetellers.GetAll(golog)
+	} else if strings.HasPrefix(pathinfo, "/zodiacinfo") {
+		
+		bres = zodiacinfo.GetInfo(golog, c_local, locale, themes, site,extpath)
 	}
 
 	if strings.HasPrefix(pathinfo, "/sitemap.xml") {

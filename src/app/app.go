@@ -32,6 +32,7 @@ func (s FastCGIServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		pathinfo := req.Header.Get("X-PATHINFO")
 		menupath := req.Header.Get("X-MENUPATH")
 		quant :=req.Header.Get("X-QUANT")
+		extpath :=req.Header.Get("X-EXTPATH")
 	//	bot := req.Header.Get("X-BOT")
 
 	startOnce.Do(func() {
@@ -39,11 +40,7 @@ func (s FastCGIServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	})
 	
 	
-//	golog.Info("menupath "+menupath)
-//	golog.Info("quant "+quant)
-//	
-	
-	bthandler.BTrequestHandler(*golog, resp, req, locale, themes, site,pathinfo , "google", startparameters,false,variant,menupath,quant)
+	bthandler.BTrequestHandler(*golog, resp, req, locale, themes, site,pathinfo , "google", startparameters,false,variant,menupath,quant,extpath)
 
 }
 
