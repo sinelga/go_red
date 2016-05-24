@@ -5,6 +5,26 @@ import (
 //	"time"
 	)
 
+type ServerConfig struct {
+	Main struct {
+		Locale     string
+		Themes     string
+		Changefreq string
+	}
+	Dirs struct {
+		Rootdir        string
+		Rootdirm	string
+		Backendrootdir string		
+		Dbdir          string
+		Rssresorsesfile string
+	}
+}
+
+type Rssresors struct {
+	Topic string
+	Link  string
+}
+
 type Fortune_feed_links struct {
 	
 	Locale string

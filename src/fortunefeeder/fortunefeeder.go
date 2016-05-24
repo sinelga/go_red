@@ -6,7 +6,7 @@ import (
 	"domains"
 	"flag"
 	"fmt"
-	"github.com/garyburd/redigo/redis"
+//	"github.com/garyburd/redigo/redis"
 	"io/ioutil"
 	"log"
 	"log/syslog"
@@ -27,7 +27,7 @@ func main() {
 		fmt.Println("Version:", APP_VERSION)
 	}
 
-	site := *siteFlag
+//	site := *siteFlag
 
 	golog, err := syslog.New(syslog.LOG_ERR, "golog")
 
@@ -67,8 +67,8 @@ func main() {
 
 	}
 
-	var allFortuneZodiac []domains.FortuneZodiac
-	var fortuneZodiac domains.FortuneZodiac
+//	var allFortuneZodiac []domains.FortuneZodiac
+//	var fortuneZodiac domains.FortuneZodiac
 
 	for _, link := range links {
 
@@ -87,29 +87,29 @@ func main() {
 			}
 			fmt.Println(string(contents))
 
-			fortuneZodiac.Redlink = link.Locale + ":" + link.Themes + ":" + site + ":" + link.Path
-			fortuneZodiac.Zodiacinfo = contents
-
-			allFortuneZodiac = append(allFortuneZodiac, fortuneZodiac)
+//			fortuneZodiac.Redlink = link.Locale + ":" + link.Themes + ":" + site + ":" + link.Path
+//			fortuneZodiac.Zodiacinfo = contents
+//
+//			allFortuneZodiac = append(allFortuneZodiac, fortuneZodiac)
 
 		}
 
 	}
 
-	c, err := redis.Dial("tcp", ":6379")
-	if err != nil {
-
-		golog.Crit(err.Error())
-
-	}
-
-	for _, fortunezodiac := range allFortuneZodiac {
-
-		if _, err := c.Do("SET", fortunezodiac.Redlink, fortunezodiac.Zodiacinfo); err != nil {
-
-			golog.Err("fortunefeeder " + err.Error())
-		}
-
-	}
+//	c, err := redis.Dial("tcp", ":6379")
+//	if err != nil {
+//
+//		golog.Crit(err.Error())
+//
+//	}
+//
+//	for _, fortunezodiac := range allFortuneZodiac {
+//
+//		if _, err := c.Do("SET", fortunezodiac.Redlink, fortunezodiac.Zodiacinfo); err != nil {
+//
+//			golog.Err("fortunefeeder " + err.Error())
+//		}
+//
+//	}
 
 }
