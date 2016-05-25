@@ -14,7 +14,12 @@ import (
 	//	"path/filepath"
 	//	"dbhandler"
 	"gopkg.in/mgo.v2"
+	"net/http"
 	"os"
+
+	"github.com/yhat/scrape"
+	"golang.org/x/net/html"
+//	"golang.org/x/net/html/atom"
 	//	"time"
 )
 
@@ -95,25 +100,52 @@ func main() {
 
 		items := feed.Items
 
-		for _, item := range items {
+		for i, item := range items {
 
-			title := item.Title
-			//			stitle := slug.Make(title)
+			if i == 0 {
 
-			//			if _, ok := uniqstitle[stitle]; !ok {
+				fmt.Println(item.Link, item.Content)
 
-			contents := item.Summary
-			
-			fmt.Println(title,contents)
+				resp, err := http.Get(item.Link)
+				if err != nil {
+					panic(err)
+				}
+				root, err := html.Parse(resp.Body)
+				if err != nil {
+					panic(err)
 
-			//				site := addlink.AddLinktoAllfiles(linksdir, stopic, stitle)
+				}
 
-			//				fmt.Println("site", site)
-			//				item := domains.BlogItem{stopic, topic, stitle, title, contents, now, now}
+//				matcher := func(n *html.Node) bool {
+					// must check for nil values
+//					fmt.Println(n)
+//					if n.DataAtom == atom.A && n.Parent != nil  {
+//						fmt.Println(scrape.ByClass(n,"body"))
+////						fmt.Println(scrape.Attr(n, "class"))						
+////						return scrape.Attr(n.Parent.Parent, "class") == "body"
+//						return scrape.Attr(n.Parent, "class") =="title"
+//					}
+//					return false
+//				}
 
-			//				dbhandler.InsertRecord(*session, locale, themes, site, "blog", stopic, topic, item)
+//				articles := scrape.FindAll(root, matcher)
+				articles := scrape.FindAll(root,scrape.ByClass("body"))
+				
 
-			//			}
+				for _, article := range articles {
+//					fmt.Printf("%2d %s \n", i, scrape.Text(article)))
+					fmt.Println(scrape.Text(article))
+//					breaks := scrape.FindAll(article,scrape.ByTag(atom.Br))
+//					for _,br := range breaks {
+//						
+//						fmt.Println(br.)
+//						
+//					}
+					
+					
+				}
+
+			}
 
 		}
 	}
